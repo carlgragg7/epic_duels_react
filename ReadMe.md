@@ -23,7 +23,8 @@ After installation please follow the instructions below to download the repo.
 - Run the following command:
 
 ```bash
-  git clone https://github.com/adrianhuber17/webSocket-App.git
+  # git clone https://github.com/adrianhuber17/webSocket-App.git
+  git clone https://github.com/carlgragg7/epic_duels_react.git
 ```
 
 - Navigate into the new sub-folder created called **WebSocket-App**.

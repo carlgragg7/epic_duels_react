@@ -8,7 +8,6 @@ function App() {
   const [socketInstance, setSocketInstance] = useState("");
   const [loading, setLoading] = useState(true);
   const [buttonStatus, setButtonStatus] = useState(false);
-  const [players, setPlayers] = useState([]);
 
   const handleClick = () => {
     if (buttonStatus === false) {

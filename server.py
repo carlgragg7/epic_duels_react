@@ -41,6 +41,61 @@ def http_call():
     data = {'data':'This text was fetched using an HTTP call to server on render'}
     return jsonify(data)
 
+
+@socketio.on("get_deck")
+def get_deck():
+    deck = players[request.sid].get_main_deck()
+    emit("get_deck",{'data':deck})
+
+@socketio.on("get_hand")
+def get_hand():
+    hand = players[request.sid].get_hand()
+    emit("get_hand",{'data':hand})
+
+@socketio.on("get_discard_pile")
+def get_discard_pile():
+    discard_pile = players[request.sid].get_discard_pile()
+    emit("get_discard_pile",{'data':discard_pile})
+
+@socketio.on("draw_card")
+def draw_card():
+    players[request.sid].draw_card()
+    hand = players[request.sid].get_hand()
+    emit("draw_card",{'data':hand})
+
+@socketio.on("discard_card")
+def discard_card(data):
+    players[request.sid].discard_card(data)
+    hand = players[request.sid].get_hand()
+    emit("discard_card",{'data':hand})
+
+@socketio.on("get_played_cards")
+def get_played_cards():
+    played_cards = players[request.sid].get_played_cards()
+    emit("get_played_cards",{'data':played_cards})
+
+@socketio.on("play_card")
+def play_card(data):
+    card = players[request.sid].play_card(data)
+    hand = players[request.sid].get_hand()
+    played_cards = players[request.sid].get_played_cards()
+    emit("play_card",{'data':hand,'card':card})
+    emit("get_played_cards",{'data':played_cards,'card':card},broadcast=True)
+
+@socketio.on("remove_card_from_play")
+def remove_card_from_play(data):
+    card = players[request.sid].remove_card_from_play(data)
+    hand = players[request.sid].get_hand()
+    played_cards = players[request.sid].get_played_cards()
+    emit("remove_card_from_play",{'data':hand,'card':card})
+    emit("remove_card_from_play",{'data':played_cards,'card':card},broadcast=True)
+
+@socketio.on("reshuffle_discard_pile")
+def reshuffle_discard_pile():
+    players[request.sid].reshuffle_discard_pile()
+    hand = players[request.sid].get_hand()
+    emit("reshuffle_discard_pile",{'data':hand})
+
 @socketio.on("connect")
 def connected():
     """event listener when client connects to the server"""

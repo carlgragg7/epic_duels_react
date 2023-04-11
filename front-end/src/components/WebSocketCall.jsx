@@ -7,15 +7,60 @@ export default function WebSocketCall({ socket }) {
   const [players, setPlayers] = useState([]);
 
   const [viewHand, setViewHand] = useState(false);
+  const [viewDiscard, setViewDiscard] = useState(false);
+  const [viewDeck, setViewDeck] = useState(false);
 
   const [deck, setDeck] = useState([]);
   const [hand, setHand] = useState([]);
   const [discard, setDiscard] = useState([]);
   const [played_cards, setPlayedCards] = useState([]);
 
+  const [selected_card, setSelectedCardId] = useState(null);
+  const [card_is_selected, setCardIsSelected] = useState(false);
+
   const handleViewHandClick = () => {
     socket.emit("get_hand");
-    setViewHand(!viewHand);
+    setViewHand(true);
+    setViewDiscard(false);
+    setViewDeck(false);
+  };
+
+  const handleViewDiscardClick = () => {
+    socket.emit("get_discard_pile");
+    setViewHand(false);
+    setViewDiscard(true);
+    setViewDeck(false);
+  };
+
+  const handleViewDeckClick = () => {
+    socket.emit("get_deck");
+    setViewHand(false);
+    setViewDiscard(false);
+    setViewDeck(true);
+  };
+
+  const handleCardClick = (cardId) => {
+    setSelectedCardId(cardId);
+    console.log("Card ID: ", cardId);
+    setCardIsSelected(true);
+  };
+
+  const handleCardPlay = () => {
+    if (!card_is_selected) {
+      return;
+    }
+    socket.emit("play_card", { selected_card });
+    setCardIsSelected(false);
+    setSelectedCardId();
+  };
+
+  const handleDiscardCard = () => {
+    if (!card_is_selected) {
+      return;
+    }
+    socket.emit("discard_card", { selected_card });
+    setCardIsSelected(false);
+    setSelectedCardId();
   };
 
   const handleMapClick = (event) => {
@@ -43,6 +88,10 @@ export default function WebSocketCall({ socket }) {
     socket.emit("draw_card");
   };
 
+  const handleReshuffle = () => {
+    socket.emit("shuffle_discard_to_main_deck");
+  };
+
   useEffect(() => {
     socket.on("playerAdded", (playerData) => {
       setPlayers(playerData.data);
@@ -56,7 +105,7 @@ export default function WebSocketCall({ socket }) {
       setHand(deckData.data);
     });
 
-    socket.on("get_discard", (deckData) => {
+    socket.on("get_discard_pile", (deckData) => {
       setDiscard(deckData.data);
     });
 
@@ -73,7 +122,37 @@ export default function WebSocketCall({ socket }) {
   return (
     <div>
       <button onClick={onDrawCard}>Draw Card</button>
+      {/* change view hand to hide hand if view hand is clicked */}
       <button onClick={handleViewHandClick}>View Hand</button>
+      <button onClick={handleViewDiscardClick}>View Discard</button>
+      <button onClick={handleViewDeckClick}>View Deck</button>
+      <button onClick={handleReshuffle}>Shuffle Discard to Deck</button>
+      {card_is_selected ? (
+        <div>
+          <button onClick={handleCardPlay}>Play Card</button>
+          <button onClick={handleDiscardCard}>Discard Card</button>
+        </div>
+      ) : (
+        <div>
+          <button disabled>Play Card</button>
+          <button disabled>Discard Card</button>
+        </div>
+      )}
+      {/* When Cards are played, they will be displayed here */}
+      <div style={{ display: 'flex', flexDirection: 'row' }}>
+        {played_cards.map((card) => (
+          <Card
+            key={card.id}
+            id={card.id}
+            name={card.name}
+            text={card.text}
+            attack={card.attack}
+            defense={card.defense}
+            onCardClick={handleCardClick}
+          />
+        ))}
+      </div>
+
       <div
         style={{
           backgroundImage: `url(${backgroundImageUrl})`,
@@ -100,11 +179,45 @@ export default function WebSocketCall({ socket }) {
           {hand.map((card) => (
             <Card
               key={card.id}
+              id={card.id}
               name={card.name}
               text={card.text}
               attack={card.attack}
               defense={card.defense}
+              onCardClick={handleCardClick}
             />
+          ))}
+        </div>
+      )}
+      {/* On view deck button click, show deck */}
+      {viewDeck && (
+        <div style={{ display: 'flex', flexDirection: 'row' }}>
+          {deck.map((card) => (
+            <Card
+              key={card.id}
+              id={card.id}
+              name={card.name}
+              text={card.text}
+              attack={card.attack}
+              defense={card.defense}
+              onCardClick={handleCardClick}
+            />
+          ))}
+        </div>
+      )}
+      {/* On view discard button click, show discard  */}
+      {viewDiscard && (
+        <div style={{ display: 'flex', flexDirection: 'row' }}>
+          {discard.map((card) => (
+            <Card
+            key={card.id}
+            id={card.id}
+            name={card.name}
+            text={card.text}
+            attack={card.attack}
+            defense={card.defense}
+            onCardClick={handleCardClick}
+          />
           ))}
         </div>
       )}

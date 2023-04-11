@@ -36,12 +36,16 @@ class Player:
         card = self.main_deck.draw_random_card()
         self.hand.add_card(card)
 
-    def discard_card(self, card):
+    def discard_card(self, card_id):
+        card = self.hand.get_card_by_id(card_id)
+        if card == None:
+            card = self.played_cards.get_card_by_id(card_id)
         self.hand.remove_card(card)
         self.discard_pile.add_card(card)
+        return card
 
-    def play_card(self, card):
-        self.hand.remove_card(card)
+    def play_card(self, card_id):
+        card = self.hand.remove_card_by_id(card_id)
         self.played_cards.add_card(card)
         return card
 
@@ -58,13 +62,13 @@ class Player:
         self.main_deck.replace_cards(self.discard_pile.cards)
         self.discard_pile.cards = []
 
-    def discard_card(self, card):
-        self.hand.remove_card(card)
-        self.discard_pile.add_card(card)
+    # def discard_card(self, card):
+    #     self.hand.remove_card(card)
+    #     self.discard_pile.add_card(card)
 
-    def discard_card_from_played(self, card):
-        self.played_cards.remove_card(card)
-        self.discard_pile.add_card(card)
+    # def discard_card_from_played(self, card):
+    #     self.played_cards.remove_card(card)
+    #     self.discard_pile.add_card(card)
 
     def get_played_cards(self):
         return self.played_cards.get_all_to_json()

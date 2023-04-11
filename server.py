@@ -4,6 +4,7 @@ from flask_cors import CORS
 
 from flask import send_file
 from models.player import Player
+from models.deck import Deck
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'secret!'
@@ -12,6 +13,7 @@ CORS(app, origins='http://localhost:3000')
 socketio = SocketIO(app,cors_allowed_origins="*")
 
 players = {}
+played_cards = Deck(0, True)
 
 @app.route("/get_players")
 def get_players():
@@ -42,6 +44,17 @@ def http_call():
     return jsonify(data)
 
 
+@socketio.on("shuffle_discard_to_main_deck")
+def reshuffle_to_main_deck():
+    players[request.sid].reshuffle_discard_pile()
+    emit("get_discard_pile",{'data':players[request.sid].get_discard_pile()}, broadcast=True)
+    emit("get_main_deck",{'data':players[request.sid].get_main_deck()}, broadcast=True)
+
+@socketio.on("get_discard_pile")
+def get_discard_pile():
+    discard_pile = players[request.sid].discard_pile.get_all_to_json()
+    emit("get_discard_pile",{'data':discard_pile})
+
 @socketio.on("get_deck")
 def get_deck():
     deck = players[request.sid].get_main_deck()
@@ -62,25 +75,31 @@ def draw_card():
     players[request.sid].draw_card()
     hand = players[request.sid].get_hand()
     emit("draw_card",{'data':hand})
+    emit("get_hand",{'data':hand})
+    emit("get_deck",{'data':players[request.sid].get_main_deck()})
 
 @socketio.on("discard_card")
 def discard_card(data):
-    players[request.sid].discard_card(data)
+    players[request.sid].discard_card(data['selected_card'])
     hand = players[request.sid].get_hand()
-    emit("discard_card",{'data':hand})
+    played_cards.remove_card_by_id(data['selected_card'])
+    emit("get_hand",{'data':hand})
+    emit("get_discard_pile",{'data':players[request.sid].get_discard_pile()})
+    emit("get_played_cards",{'data':played_cards.get_all_to_json()}, broadcast=True)
 
 @socketio.on("get_played_cards")
 def get_played_cards():
-    played_cards = players[request.sid].get_played_cards()
-    emit("get_played_cards",{'data':played_cards})
+    # played_cards = players[request.sid].get_played_cards()
+    emit("get_played_cards",{'data':played_cards.get_all_to_json()}, broadcast=True)
 
 @socketio.on("play_card")
 def play_card(data):
-    card = players[request.sid].play_card(data)
+    card = players[request.sid].play_card(data['selected_card'])
+    played_cards.add_card(card)
     hand = players[request.sid].get_hand()
-    played_cards = players[request.sid].get_played_cards()
-    emit("play_card",{'data':hand,'card':card})
-    emit("get_played_cards",{'data':played_cards,'card':card},broadcast=True)
+    # played_cards = players[request.sid].get_played_cards()
+    emit("get_played_cards",{'data':played_cards.get_all_to_json()}, broadcast=True)
+    emit("get_hand",{'data':hand})
 
 @socketio.on("remove_card_from_play")
 def remove_card_from_play(data):

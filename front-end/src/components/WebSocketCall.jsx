@@ -18,6 +18,25 @@ export default function WebSocketCall({ socket }) {
   const [selected_card, setSelectedCardId] = useState(null);
   const [card_is_selected, setCardIsSelected] = useState(false);
 
+  const [randomNumber, setRandomNumber] = useState(null);
+
+  const generateNumber = () => {
+    const newNumber = Math.floor(Math.random() * 6) + 1;
+    if (newNumber === 1) {
+      setRandomNumber("Three");
+    } else if (newNumber === 2) {
+      setRandomNumber("Four");
+    } else if (newNumber === 3) {
+      setRandomNumber("Five");
+    } else if (newNumber === 4) {
+      setRandomNumber("2 All");
+    } else if (newNumber === 5) {
+      setRandomNumber("3 All");
+    } else if (newNumber === 6) {
+      setRandomNumber("4 All");
+    }
+  };
+
   const handleViewHandClick = () => {
     socket.emit("get_hand");
     setViewHand(true);
@@ -121,6 +140,8 @@ export default function WebSocketCall({ socket }) {
 
   return (
     <div>
+      <button onClick={generateNumber}>Generate Random Number</button>
+      {randomNumber && <p>The random number is: {randomNumber}</p>}
       <button onClick={onDrawCard}>Draw Card</button>
       {/* change view hand to hide hand if view hand is clicked */}
       <button onClick={handleViewHandClick}>View Hand</button>

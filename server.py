@@ -27,15 +27,15 @@ def get_players():
 
 @app.route("/board")
 def board():
-    return send_file('images/board.png', mimetype='image/png')
+    return send_file('/app/images/board.png', mimetype='image/png')
 
 @app.route("/luke")
 def luke():
-    return send_file('images/luke.png', mimetype='image/png')
+    return send_file('/app/images/luke.png', mimetype='image/png')
 
 @app.route("/vader")
 def vader():
-    return send_file('images/vader.png', mimetype='image/png')
+    return send_file('/app/images/vader.png', mimetype='image/png')
 
 @app.route("/http-call")
 def http_call():

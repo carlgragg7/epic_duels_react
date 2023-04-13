@@ -1,0 +1,31 @@
+version: "3.9"
+
+services:
+  frontend:
+    container_name: my-react-app
+    build:
+      context: ./front-end
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./front-end:/app
+      - /app/node_modules
+    depends_on:
+      - server
+    networks:
+      - app-network
+
+  server:
+    container_name: my-server-app
+    image: python:3.9
+    command: python -m http.server 5001
+    ports:
+      - "5001:5001"
+    volumes:
+      - ./images:/app/images
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge

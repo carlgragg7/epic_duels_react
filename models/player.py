@@ -16,8 +16,12 @@ class Player:
         self.name = name
         if name.lower() == "luke":
             self.imageURL = "http://localhost:5001/luke"
+            self.width = 20
+            self.height = 30
         else:
             self.imageURL = "http://localhost:5001/vader"
+            self.width = 50
+            self.height = 60
 
     def set_location(self, location):
         self.location = location
@@ -30,7 +34,7 @@ class Player:
 
     # return json of player
     def to_json(self):
-        return {'id':self.id,'name':self.name,'location':self.location,'imageURL':self.imageURL}
+        return {'id':self.id,'name':self.name,'location':self.location,'imageURL':self.imageURL,'width':f'{self.width}px','height':f'{self.height}px'}
 
     def draw_card(self):
         card = self.main_deck.draw_random_card()

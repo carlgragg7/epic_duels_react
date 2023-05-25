@@ -190,6 +190,8 @@ export default function WebSocketCall({ socket }) {
             x={player.location[0]}
             y={player.location[1]}
             imageUrl={player.imageURL}
+            width={player.width}
+            height={player.height}
           />
         ))}
       </div>

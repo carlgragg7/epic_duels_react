@@ -1,6 +1,6 @@
 import React from "react";
 
-export default function Player ({ x, y, imageUrl }) {
+export default function Player ({ x, y, imageUrl, width, height }) {
   return (
     <div
       style={{
@@ -8,8 +8,8 @@ export default function Player ({ x, y, imageUrl }) {
         top: y + "px",
         left: x + "px",
         backgroundImage: `url(${imageUrl})`,
-        width: "20px",
-        height: "30px",
+        width: width,
+        height: height,
         backgroundSize: "cover",
       }}
     ></div>

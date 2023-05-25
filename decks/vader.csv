@@ -1,0 +1,14 @@
+Darth Vader,20HP,Melee,"",22
+Name,Attack,Defense,Description,Quantity
+Wrath,,,Choose one character’s players to each take 2 damage,3,
+Choke,,,Choose one minor character to take 6 damage,3,
+Throw Debris,,,Choose one character to take 4 damage,2,
+Dark Side Drain,5,,For each point of damage done with this attack Vader recovers 1 damage,2,
+All Too Easy,9,,If this attack is not blocked attack value is 20,1,
+Your Skills Are Not Complete,,,Choose a player to reveal his hand and discard all Special cards,1,
+Card,5,1,,2,
+Card,4,1,,1,
+Card,4,2,,1,
+Card,2,3,,1,
+Card,3,3,,2,
+Card,1,4,,3​,

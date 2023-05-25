@@ -2,11 +2,11 @@ from models.deck import Deck
 from models.card import Card
 class Player:
 
-    def __init__(self, id):
+    def __init__(self, id, import_file=None):
         self.id = id
         self.name = None
         self.location = (30, 30)
-        self.main_deck = Deck(id)
+        self.main_deck = Deck(id, import_file=import_file)
         self.hand = Deck(id)
         self.discard_pile = Deck(id)
         self.played_cards = Deck(id)

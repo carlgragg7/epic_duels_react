@@ -6,20 +6,29 @@ from models.card import Card
 class Deck:
     def __init__(self, player_id, played_cards=False, import_file=None):
         self.cards = []
+        self.player_id = player_id
         if import_file != None:
             self.import_deck(import_file)
-        if not played_cards:
-            self.add_card(Card(player_id, "Luke", 1, 1, "Luke is a Jedi"))
-            self.add_card(Card(player_id, "Vader", 1, 2, "Vader is a Sith"))
-            self.add_card(Card(player_id, "Obi-Wan", 5, 1, "Obi-Wan is a Jedi"))
-            self.add_card(Card(player_id, "Darth Maul", 1, 4, "Darth Maul is a Sith"))
-            self.add_card(Card(player_id, "Yoda", 2, 2, "Yoda is a Jedi"))
+        # if not played_cards:
+        #     self.add_card(Card(player_id, "Luke", 1, 1, "Luke is a Jedi"))
+        #     self.add_card(Card(player_id, "Vader", 1, 2, "Vader is a Sith"))
+        #     self.add_card(Card(player_id, "Obi-Wan", 5, 1, "Obi-Wan is a Jedi"))
+        #     self.add_card(Card(player_id, "Darth Maul", 1, 4, "Darth Maul is a Sith"))
+        #     self.add_card(Card(player_id, "Yoda", 2, 2, "Yoda is a Jedi"))
 
-    # def import_deck(self, import_file):
-    #     with open(import_file) as f:
-    #         for line in f:
-    #             card = line.split(",")
-    #             self.cards.append(Card(card[0],card[1],card[2],card[3],card[4].strip()))
+    # import a deck from a csv file
+    def import_deck(self, import_file):
+        with open(import_file, 'r') as f:
+            # csv has 4 columns: name, attack, defense, description
+            count = 0
+            for line in f:
+                if count < 2:
+                    count += 1
+                    continue
+                line = line.strip()
+                line = line.split(",")
+                # for i in range(int(line[4])):
+                self.add_card(Card(self.player_id, line[0], line[1], line[2], line[3]))
 
     def add_card(self, card):
         self.cards.append(card)

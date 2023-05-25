@@ -118,11 +118,13 @@ def reshuffle_discard_pile():
 @socketio.on("connect")
 def connected():
     """event listener when client connects to the server"""
-    player = Player(request.sid)
-    players[request.sid] = player
     if len(players) == 1:
+        player = Player(request.sid, './decks/obi.csv')
+        players[request.sid] = player
         players[request.sid].set_name("luke")
     else:
+        player = Player(request.sid, './decks/vader.csv')
+        players[request.sid] = player
         players[request.sid].set_name("vader")
 
     get_players = []

@@ -8,7 +8,7 @@ from models.deck import Deck
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'secret!'
-CORS(app, origins='http://localhost:3000')
+CORS()
 socketio = SocketIO(app,cors_allowed_origins="*")
 
 players = {}

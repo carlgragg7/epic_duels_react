@@ -4,14 +4,15 @@ from flask_cors import CORS
 
 from flask import send_file
 from models.player import Player
+from models.deck import Deck
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'secret!'
-# CORS(app,resources={r"/*":{"origins":"*"}})
-CORS(app, origins='http://localhost:3000')
+CORS()
 socketio = SocketIO(app,cors_allowed_origins="*")
 
 players = {}
+played_cards = Deck(0, True)
 
 @app.route("/get_players")
 def get_players():
@@ -41,14 +42,88 @@ def http_call():
     data = {'data':'This text was fetched using an HTTP call to server on render'}
     return jsonify(data)
 
+
+@socketio.on("shuffle_discard_to_main_deck")
+def reshuffle_to_main_deck():
+    players[request.sid].reshuffle_discard_pile()
+    emit("get_discard_pile",{'data':players[request.sid].get_discard_pile()}, broadcast=True)
+    emit("get_main_deck",{'data':players[request.sid].get_main_deck()}, broadcast=True)
+
+@socketio.on("get_discard_pile")
+def get_discard_pile():
+    discard_pile = players[request.sid].discard_pile.get_all_to_json()
+    emit("get_discard_pile",{'data':discard_pile})
+
+@socketio.on("get_deck")
+def get_deck():
+    deck = players[request.sid].get_main_deck()
+    emit("get_deck",{'data':deck})
+
+@socketio.on("get_hand")
+def get_hand():
+    hand = players[request.sid].get_hand()
+    emit("get_hand",{'data':hand})
+
+@socketio.on("get_discard_pile")
+def get_discard_pile():
+    discard_pile = players[request.sid].get_discard_pile()
+    emit("get_discard_pile",{'data':discard_pile})
+
+@socketio.on("draw_card")
+def draw_card():
+    players[request.sid].draw_card()
+    hand = players[request.sid].get_hand()
+    emit("draw_card",{'data':hand})
+    emit("get_hand",{'data':hand})
+    emit("get_deck",{'data':players[request.sid].get_main_deck()})
+
+@socketio.on("discard_card")
+def discard_card(data):
+    players[request.sid].discard_card(data['selected_card'])
+    hand = players[request.sid].get_hand()
+    played_cards.remove_card_by_id(data['selected_card'])
+    emit("get_hand",{'data':hand})
+    emit("get_discard_pile",{'data':players[request.sid].get_discard_pile()})
+    emit("get_played_cards",{'data':played_cards.get_all_to_json()}, broadcast=True)
+
+@socketio.on("get_played_cards")
+def get_played_cards():
+    # played_cards = players[request.sid].get_played_cards()
+    emit("get_played_cards",{'data':played_cards.get_all_to_json()}, broadcast=True)
+
+@socketio.on("play_card")
+def play_card(data):
+    card = players[request.sid].play_card(data['selected_card'])
+    played_cards.add_card(card)
+    hand = players[request.sid].get_hand()
+    # played_cards = players[request.sid].get_played_cards()
+    emit("get_played_cards",{'data':played_cards.get_all_to_json()}, broadcast=True)
+    emit("get_hand",{'data':hand})
+
+@socketio.on("remove_card_from_play")
+def remove_card_from_play(data):
+    card = players[request.sid].remove_card_from_play(data)
+    hand = players[request.sid].get_hand()
+    played_cards = players[request.sid].get_played_cards()
+    emit("remove_card_from_play",{'data':hand,'card':card})
+    emit("remove_card_from_play",{'data':played_cards,'card':card},broadcast=True)
+
+@socketio.on("reshuffle_discard_pile")
+def reshuffle_discard_pile():
+    players[request.sid].reshuffle_discard_pile()
+    hand = players[request.sid].get_hand()
+    emit("reshuffle_discard_pile",{'data':hand})
+
 @socketio.on("connect")
 def connected():
     """event listener when client connects to the server"""
-    player = Player(request.sid)
-    players[request.sid] = player
     if len(players) == 1:
+        player = Player(request.sid, './decks/obi.csv')
+        players[request.sid] = player
         players[request.sid].set_name("luke")
     else:
+        player = Player(request.sid, './decks/vader.csv')
+        players[request.sid] = player
         players[request.sid].set_name("vader")
 
     get_players = []
@@ -91,4 +166,4 @@ def handle_player_added(data):
     emit('playerAdded', data)
 
 if __name__ == '__main__':
-    socketio.run(app, debug=True,port=5001)
+    socketio.run(app, debug=True, port=5001)

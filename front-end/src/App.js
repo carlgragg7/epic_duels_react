@@ -8,7 +8,6 @@ function App() {
   const [socketInstance, setSocketInstance] = useState("");
   const [loading, setLoading] = useState(true);
   const [buttonStatus, setButtonStatus] = useState(false);
-  const [players, setPlayers] = useState([]);
 
   const handleClick = () => {
     if (buttonStatus === false) {
@@ -20,7 +19,7 @@ function App() {
 
   useEffect(() => {
     if (buttonStatus === true) {
-      const socket = io("localhost:5001/", {
+      const socket = io("3.85.162.146:5001/", {
         transports: ["websocket"],
         cors: {
           origin: "http://localhost:3000/",

@@ -2,27 +2,24 @@ from models.deck import Deck
 from models.card import Card
 class Player:
 
-    def __init__(self, id, import_file=None):
+    def __init__(self, id):
         self.id = id
         self.name = None
         self.location = (30, 30)
-        self.main_deck = Deck(id, import_file=import_file)
+        self.main_deck = None
         self.hand = Deck(id)
         self.discard_pile = Deck(id)
         self.played_cards = Deck(id)
+        self.width = 50
+        self.height = 60
         self.imageURL = None
+
+    def create_player(self, import_file=None):
+        self.main_deck = Deck(self.id, import_file=import_file)
 
     def set_name(self, name):
         self.name = name
-        # if name contains obi, set image to obi
-        if name.lower().find("obi") != -1:
-            self.imageURL = "http://3.85.162.146:5001/luke"
-            self.width = 20
-            self.height = 30
-        else:
-            self.imageURL = "http://3.85.162.146:5001/vader"
-            self.width = 50
-            self.height = 60
+        self.imageURL = f'http://localhost:5001/{name}'
 
     def set_location(self, location):
         self.location = location

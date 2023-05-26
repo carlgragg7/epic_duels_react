@@ -8,6 +8,11 @@ function App() {
   const [socketInstance, setSocketInstance] = useState("");
   const [loading, setLoading] = useState(true);
   const [buttonStatus, setButtonStatus] = useState(false);
+  const [character, setCharacter] = useState('');
+
+  const handleChange = (event) => {
+      setCharacter(event.target.value);
+  };
 
   const handleClick = () => {
     if (buttonStatus === false) {
@@ -19,17 +24,18 @@ function App() {
 
   useEffect(() => {
     if (buttonStatus === true) {
-      const socket = io("3.85.162.146:5001/", {
+      // const socket = io("localhost:5001/", {
+      const socket = io("localhost:5001/", {
         transports: ["websocket"],
         cors: {
-          origin: "http://localhost:3000/",
+          origin: "http://localhost:3000",
         },
       });
 
       setSocketInstance(socket);
 
       socket.on("connect", (data) => {
-        console.log(data);
+        socket.emit("create_character", { character })
       });
 
       setLoading(false);
@@ -48,7 +54,16 @@ function App() {
     <div className="App">
       <h1>Star Wars Epic Duels</h1>
       {!buttonStatus ? (
-        <button onClick={handleClick}>Connect to Server</button>
+        <form>
+        <select value={character} onChange={handleChange}>
+            <option value="">--Please choose a character--</option>
+            <option value="luke">Luke Skywalker</option>
+            <option value="vader">Darth Vader</option>
+            <option value="obi">Obi-Wan Kenobi</option>
+            <option value="maul">Darth Maul</option>
+        </select>
+        <button onClick={handleClick} disabled={!character}>Connect to Server</button>
+    </form>
       ) : (
         <>
           <button onClick={handleClick}>Disconnect</button>

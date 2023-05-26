@@ -8,7 +8,7 @@ from models.deck import Deck
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'secret!'
-CORS()
+CORS(app, origins='http://localhost:3000')
 socketio = SocketIO(app,cors_allowed_origins="*")
 
 players = {}
@@ -28,9 +28,9 @@ def get_players():
 def board():
     return send_file('images/board.png', mimetype='image/png')
 
-@app.route("/luke")
-def luke():
-    return send_file('images/luke.png', mimetype='image/png')
+@app.route("/obi")
+def obi():
+    return send_file('images/obi.png', mimetype='image/png')
 
 @app.route("/vader")
 def vader():
@@ -117,14 +117,25 @@ def reshuffle_discard_pile():
 @socketio.on("connect")
 def connected():
     """event listener when client connects to the server"""
-    if len(players) == 1:
-        player = Player(request.sid, './decks/obi.csv')
-        players[request.sid] = player
-        players[request.sid].set_name("luke")
-    else:
-        player = Player(request.sid, './decks/vader.csv')
-        players[request.sid] = player
-        players[request.sid].set_name("vader")
+    player = Player(request.sid)
+    players[request.sid] = player
+
+    get_players = []
+    for player in players.values():
+        get_players.append(player.to_json())
+
+    if get_players == None:
+        get_players = []
+
+    # emit("playerAdded",{'data':get_players}, broadcast=True)
+    emit("connect",{"data":f"id: {request.sid} is connected"})
+
+@socketio.on("create_character")
+def create_character(character):
+    name = character['character']
+    deck_path = f'./decks/{name}.csv'
+    players[request.sid].create_player(deck_path)
+    players[request.sid].set_name(name)
 
     get_players = []
     for player in players.values():
@@ -134,7 +145,6 @@ def connected():
         get_players = []
 
     emit("playerAdded",{'data':get_players}, broadcast=True)
-    emit("connect",{"data":f"id: {request.sid} is connected"})
 
 @socketio.on('data')
 def handle_message(data):

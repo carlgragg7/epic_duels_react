@@ -19,7 +19,7 @@ class Player:
 
     def set_name(self, name):
         self.name = name
-        self.imageURL = f'http://localhost:5001/{name}'
+        self.imageURL = f'http://3.85.162.146:5001/{name}'
 
     def set_location(self, location):
         self.location = location

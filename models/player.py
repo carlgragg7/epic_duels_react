@@ -14,12 +14,13 @@ class Player:
 
     def set_name(self, name):
         self.name = name
-        if name.lower() == "luke":
-            self.imageURL = "http://localhost:5001/luke"
+        # if name contains obi, set image to obi
+        if name.lower().find("obi") != -1:
+            self.imageURL = "http://3.85.162.146:5001/luke"
             self.width = 20
             self.height = 30
         else:
-            self.imageURL = "http://localhost:5001/vader"
+            self.imageURL = "http://3.85.162.146:5001/vader"
             self.width = 50
             self.height = 60
 

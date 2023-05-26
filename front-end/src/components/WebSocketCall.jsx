@@ -3,7 +3,7 @@ import Player from "./Player";
 import Card from './Card';
 
 export default function WebSocketCall({ socket }) {
-  const backgroundImageUrl = 'http://127.0.0.1:5001/board';
+  const backgroundImageUrl = 'http://3.85.162.146:5001/board';
   const [players, setPlayers] = useState([]);
 
   const [viewHand, setViewHand] = useState(false);

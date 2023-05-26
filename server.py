@@ -8,8 +8,7 @@ from models.deck import Deck
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'secret!'
-# CORS(app,resources={r"/*":{"origins":"*"}})
-CORS(app, origins='http://localhost:3000')
+CORS()
 socketio = SocketIO(app,cors_allowed_origins="*")
 
 players = {}
@@ -167,4 +166,4 @@ def handle_player_added(data):
     emit('playerAdded', data)
 
 if __name__ == '__main__':
-    socketio.run(app, debug=True,port=5001)
+    socketio.run(app, debug=True, port=5001)

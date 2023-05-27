@@ -76,3 +76,6 @@ You will notice in the code that I manually set Flask to run on PORT 5001 instea
 This is because AirPlay in Apple is also running on PORT 5000 and it was making it difficult for Flask and React to connect
 using WebSockets.
 Another workaround is to turn off Airplay on the Mac by going to System Preferences > Sharing > uncheck AirPlay Receiver.
+
+
+flask ip: 3.85.162.146

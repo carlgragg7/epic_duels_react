@@ -1,4 +1,4 @@
-Obi-Wan Kenobi,18HP,Melee,"",22
+Obi-Wan Kenobi,18,Melee,"",22
 Name,Attack,Defense,Description,Quantity,
 Jedi Attack,6,,Move 6,3,
 Jedi Block,,12,Draw a card,3,

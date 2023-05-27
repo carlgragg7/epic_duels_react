@@ -3,6 +3,7 @@ import HttpCall from "./components/HttpCall";
 import WebSocketCall from "./components/WebSocketCall";
 import { io } from "socket.io-client";
 import { useEffect, useState, useRef } from "react";
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 function App() {
   const [socketInstance, setSocketInstance] = useState("");
@@ -24,7 +25,7 @@ function App() {
 
   useEffect(() => {
     if (buttonStatus === true) {
-      const socket = io("3.85.162.146:5001/", {
+      const socket = io("localhost:5001/", {
         transports: ["websocket"],
         cors: {
           origin: "http://localhost:3000",

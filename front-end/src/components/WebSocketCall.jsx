@@ -4,7 +4,7 @@ import Card from './Card';
 import HealthBars from './HealthBars';
 
 export default function WebSocketCall({ socket }) {
-  const backgroundImageUrl = 'http://localhost:5001/board';
+  const backgroundImageUrl = 'http://3.85.162.146:5001/board';
   const [players, setPlayers] = useState([]);
 
   const [viewHand, setViewHand] = useState(false);

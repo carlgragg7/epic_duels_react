@@ -175,5 +175,24 @@ def move_player_socket(data):
 def handle_player_added(data):
     emit('playerAdded', data)
 
+@socketio.on('healthChanged')
+def handle_health_changed(data):
+    max = int(players[request.sid].max_health)
+    health = int(players[request.sid].health)
+    health_change = data['health_change']
+    health += health_change
+    if health <= max and health >= 0:
+        players[request.sid].health = health
+
+    print(players[request.sid].health)
+    get_players = []
+    for player in players.values():
+        get_players.append(player.to_json())
+
+    if get_players == None:
+        get_players = []
+
+    emit("playerAdded",{'data':get_players}, broadcast=True)
+
 if __name__ == '__main__':
     socketio.run(app, debug=True, host='0.0.0.0', port=5001)

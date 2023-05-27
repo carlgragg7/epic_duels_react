@@ -13,13 +13,21 @@ class Player:
         self.width = 50
         self.height = 60
         self.imageURL = None
+        self.health = 0
+        self.max_health = 0
 
     def create_player(self, import_file=None):
         self.main_deck = Deck(self.id, import_file=import_file)
+        with open(import_file, 'r') as f:
+            # first line of csv contains the health
+            lines = f.readlines()
+            split_line = lines[0].split(',')
+            self.health = split_line[1]
+            self.max_health = split_line[1]
 
     def set_name(self, name):
         self.name = name
-        self.imageURL = f'http://3.85.162.146:5001/{name}'
+        self.imageURL = f'http://localhost:5001/{name}'
 
     def set_location(self, location):
         self.location = location
@@ -32,7 +40,16 @@ class Player:
 
     # return json of player
     def to_json(self):
-        return {'id':self.id,'name':self.name,'location':self.location,'imageURL':self.imageURL,'width':f'{self.width}px','height':f'{self.height}px'}
+        return {
+            'id':self.id,
+            'name':self.name,
+            'location':self.location,
+            'imageURL':self.imageURL,
+            'width':f'{self.width}px',
+            'height':f'{self.height}px',
+            'health':self.health,
+            'max_health':self.max_health
+        }
 
     def draw_card(self):
         card = self.main_deck.draw_random_card()

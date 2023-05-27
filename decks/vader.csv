@@ -1,4 +1,4 @@
-Darth Vader,20HP,Melee,"",22
+Darth Vader,20,Melee,"",22
 Name,Attack,Defense,Description,Quantity
 Wrath,,,Choose one character’s players to each take 2 damage,3,
 Choke,,,Choose one minor character to take 6 damage,3,

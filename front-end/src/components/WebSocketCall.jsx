@@ -1,9 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
 import Player from "./Player";
 import Card from './Card';
+import HealthBars from './HealthBars';
 
 export default function WebSocketCall({ socket }) {
-  const backgroundImageUrl = 'http://3.85.162.146:5001/board';
+  const backgroundImageUrl = 'http://localhost:5001/board';
   const [players, setPlayers] = useState([]);
 
   const [viewHand, setViewHand] = useState(false);
@@ -111,6 +112,14 @@ export default function WebSocketCall({ socket }) {
     socket.emit("shuffle_discard_to_main_deck");
   };
 
+  const handleHealthIncrease = () => {
+    socket.emit("healthChanged", { health_change: 1 });
+  };
+
+  const handleHealthDecrease = () => {
+    socket.emit("healthChanged", { health_change: -1 });
+  };
+
   useEffect(() => {
     socket.on("playerAdded", (playerData) => {
       setPlayers(playerData.data);
@@ -140,66 +149,37 @@ export default function WebSocketCall({ socket }) {
 
   return (
     <div>
-      <button onClick={generateNumber}>Generate Random Number</button>
-      {randomNumber && <p>The random number is: {randomNumber}</p>}
-      <button onClick={onDrawCard}>Draw Card</button>
-      {/* change view hand to hide hand if view hand is clicked */}
-      <button onClick={handleViewHandClick}>View Hand</button>
-      <button onClick={handleViewDiscardClick}>View Discard</button>
-      <button onClick={handleViewDeckClick}>View Deck</button>
-      <button onClick={handleReshuffle}>Shuffle Discard to Deck</button>
-      {card_is_selected ? (
-        <div>
-          <button onClick={handleCardPlay}>Play Card</button>
-          <button onClick={handleDiscardCard}>Discard Card</button>
-        </div>
-      ) : (
-        <div>
-          <button disabled>Play Card</button>
-          <button disabled>Discard Card</button>
-        </div>
-      )}
-      {/* When Cards are played, they will be displayed here */}
-      <div style={{ display: 'flex', flexDirection: 'row' }}>
-        {played_cards.map((card) => (
-          <Card
-            key={card.id}
-            id={card.id}
-            name={card.name}
-            text={card.text}
-            attack={card.attack}
-            defense={card.defense}
-            onCardClick={handleCardClick}
-          />
-        ))}
-      </div>
-
-      <div
-        style={{
-          backgroundImage: `url(${backgroundImageUrl})`,
-          backgroundSize: 'cover',
-          width: '50vw',
-          height: '30vw',
-          position: 'relative',
-        }}
-        onClick={handleMapClick}
-      >
-        {players.map((player) => (
-          <Player
-            key={player.id}
-            x={player.location[0]}
-            y={player.location[1]}
-            imageUrl={player.imageURL}
-            width={player.width}
-            height={player.height}
-          />
-        ))}
-      </div>
-
-      {/* On view hand button click, show hand */}
-      {viewHand && (
+      {/* <div>
+        <Counter />
+      </div> */}
+      <div>
+        <HealthBars
+          players={players}
+        />
+        <button onClick={generateNumber}>Generate Random Number</button>
+        {randomNumber && <p>The random number is: {randomNumber}</p>}
+        <button onClick={onDrawCard}>Draw Card</button>
+        {/* change view hand to hide hand if view hand is clicked */}
+        <button onClick={handleViewHandClick}>View Hand</button>
+        <button onClick={handleViewDiscardClick}>View Discard</button>
+        <button onClick={handleViewDeckClick}>View Deck</button>
+        <button onClick={handleReshuffle}>Shuffle Discard to Deck</button>
+        {card_is_selected ? (
+          <div>
+            <button onClick={handleCardPlay}>Play Card</button>
+            <button onClick={handleDiscardCard}>Discard Card</button>
+          </div>
+        ) : (
+          <div>
+            <button disabled>Play Card</button>
+            <button disabled>Discard Card</button>
+          </div>
+        )}
+        <button onClick={handleHealthIncrease}>Increase Health</button>
+        <button onClick={handleHealthDecrease}>Decrease Health</button>
+        {/* When Cards are played, they will be displayed here */}
         <div style={{ display: 'flex', flexDirection: 'row' }}>
-          {hand.map((card) => (
+          {played_cards.map((card) => (
             <Card
               key={card.id}
               id={card.id}
@@ -211,12 +191,66 @@ export default function WebSocketCall({ socket }) {
             />
           ))}
         </div>
-      )}
-      {/* On view deck button click, show deck */}
-      {viewDeck && (
-        <div style={{ display: 'flex', flexDirection: 'row' }}>
-          {deck.map((card) => (
-            <Card
+
+        <div
+          style={{
+            backgroundImage: `url(${backgroundImageUrl})`,
+            backgroundSize: 'cover',
+            width: '50vw',
+            height: '30vw',
+            position: 'relative',
+          }}
+          onClick={handleMapClick}
+        >
+          {players.map((player) => (
+            <Player
+              key={player.id}
+              x={player.location[0]}
+              y={player.location[1]}
+              imageUrl={player.imageURL}
+              width={player.width}
+              height={player.height}
+            />
+          ))}
+        </div>
+
+        {/* On view hand button click, show hand */}
+        {viewHand && (
+          <div style={{ display: 'flex', flexDirection: 'row' }}>
+            {hand.map((card) => (
+              <Card
+                key={card.id}
+                id={card.id}
+                name={card.name}
+                text={card.text}
+                attack={card.attack}
+                defense={card.defense}
+                onCardClick={handleCardClick}
+              />
+            ))}
+          </div>
+        )}
+        {/* On view deck button click, show deck */}
+        {viewDeck && (
+          <div style={{ display: 'flex', flexDirection: 'row' }}>
+            {deck.map((card) => (
+              <Card
+                key={card.id}
+                id={card.id}
+                name={card.name}
+                text={card.text}
+                attack={card.attack}
+                defense={card.defense}
+                onCardClick={handleCardClick}
+              />
+            ))}
+          </div>
+        )}
+        {/* On view discard button click, show discard  */}
+        {viewDiscard && (
+          <div style={{ display: 'flex', flexDirection: 'row' }}>
+            {discard.map((card) => (
+              <Card
               key={card.id}
               id={card.id}
               name={card.name}
@@ -225,25 +259,10 @@ export default function WebSocketCall({ socket }) {
               defense={card.defense}
               onCardClick={handleCardClick}
             />
-          ))}
-        </div>
-      )}
-      {/* On view discard button click, show discard  */}
-      {viewDiscard && (
-        <div style={{ display: 'flex', flexDirection: 'row' }}>
-          {discard.map((card) => (
-            <Card
-            key={card.id}
-            id={card.id}
-            name={card.name}
-            text={card.text}
-            attack={card.attack}
-            defense={card.defense}
-            onCardClick={handleCardClick}
-          />
-          ))}
-        </div>
-      )}
+            ))}
+          </div>
+        )}
+      </div>
     </div>
   );
 }
